@@ -4,15 +4,16 @@
 #include <libteddy/inc/core.hpp>
 #include <libteddy/inc/reliability.hpp>
 
-#include <libtsl/expressions.hpp>
-#include <libtsl/iterators.hpp>
-#include <libtsl/utilities.hpp>
+#include <libtsl/inc/expressions.hpp>
+#include <libtsl/inc/iterators.hpp>
 
 #include <functional>
 #include <iterator>
 #include <numeric>
 #include <variant>
 #include <vector>
+
+// TODO(michal): move to tsl
 
 namespace teddy::tests {
 
@@ -154,55 +155,55 @@ struct expression_tree_settings {
 /**
  * \brief Makes BDD manager
  */
-inline auto make_manager (bdd_manager_settings const &settings, tsl::rng_t &rng)
+inline auto make_manager (bdd_manager_settings const &settings, std::ranlux48 &rng)
   -> bdd_manager;
 
 /**
  * \brief Makes MDD manager
  */
 template<int M>
-auto make_manager (mdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (mdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> mdd_manager<M>;
 
 /**
  * \brief Makes iMDD manager
  */
 template<int M>
-auto make_manager (imdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (imdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> imdd_manager;
 
 /**
  * \brief Makes ifMDD manager
  */
 template<int M>
-auto make_manager (ifmdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (ifmdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> ifmdd_manager<M>;
 
 /**
  * \brief Makes bss_manager
  */
-inline auto make_manager (bss_manager_settings const &settings, tsl::rng_t &rng)
+inline auto make_manager (bss_manager_settings const &settings, std::ranlux48 &rng)
   -> bss_manager;
 
 /**
  * \brief Makes mss_manager
  */
 template<int M>
-auto make_manager (mss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (mss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> mss_manager<M>;
 
 /**
  * \brief Makes imss_manager
  */
 template<int M>
-auto make_manager (imss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (imss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> imss_manager;
 
 /**
  * \brief Makes ifmss_manager
  */
 template<int M>
-auto make_manager (ifmss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (ifmss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> ifmss_manager<M>;
 
 /**
@@ -220,7 +221,7 @@ auto make_diagram (
  */
 inline auto make_expression (
   minmax_expression_settings const &settings,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> tsl::minmax_expr;
 
 /**
@@ -228,7 +229,7 @@ inline auto make_expression (
  */
 inline auto make_expression (
   expression_tree_settings const &settings,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> std::unique_ptr<tsl::expr_node>;
 
 

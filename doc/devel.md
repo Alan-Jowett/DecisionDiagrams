@@ -14,3 +14,5 @@ variables manually instead of using `find_*` functions
 set(GINAC_INCLUDES /usr/local/include/ginac)
 set(GINAC_LIBRARY /usr/local/lib/libginac.so)
 ```
+
+TODO build ginac and cln from source

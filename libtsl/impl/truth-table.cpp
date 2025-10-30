@@ -1,4 +1,4 @@
-#include <libtsl/truth_table.hpp>
+#include <libtsl/inc/truth-table.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -8,8 +8,8 @@
 
 namespace teddy::tsl {
 truth_table::truth_table(
-  std::vector<int32> vector,
-  std::vector<int32> domains
+  std::vector<int> vector,
+  std::vector<int> domains
 ) :
   vector_(std::move(vector)),
   domain_(std::move(domains)),
@@ -37,37 +37,37 @@ truth_table::truth_table(
   }
 }
 
-auto truth_table::get_var_count() const -> int32 {
-  return static_cast<int32>(ssize(domain_));
+auto truth_table::get_var_count() const -> int {
+  return static_cast<int>(ssize(domain_));
 }
 
-auto truth_table::get_vector() const -> std::vector<int32> const & {
+auto truth_table::get_vector() const -> std::vector<int> const & {
   return vector_;
 }
 
-auto truth_table::get_domains() const -> std::vector<int32> const & {
+auto truth_table::get_domains() const -> std::vector<int> const & {
   return domain_;
 }
 
-auto truth_table::get_offsets() const -> std::vector<int32> const & {
+auto truth_table::get_offsets() const -> std::vector<int> const & {
   return offset_;
 }
 
-auto truth_table::get_max_val() const -> int32 {
+auto truth_table::get_max_val() const -> int {
   return maxValue_;
 }
 
-auto satisfy_count (truth_table const &table, int32 val) -> int64 {
-  auto result = int64 {0};
+auto satisfy_count (truth_table const &table, int val) -> long long {
+  long long result = 0;
   for (auto const tableVal : table.get_vector()) {
-    result += static_cast<int32>(tableVal == val);
+    result += static_cast<int>(tableVal == val);
   }
   return result;
 }
 
-auto satisfy_all (truth_table const &table, int32 const val)
-  -> std::vector<std::vector<int32>> {
-  auto elems = std::vector<std::vector<int32>>();
+auto satisfy_all (truth_table const &table, int const val)
+  -> std::vector<std::vector<int>> {
+  auto elems = std::vector<std::vector<int>>();
   domain_for_each(table, [&elems, val] (auto const tableVal, auto elem) {
     if (tableVal == val) {
       elems.emplace_back(std::move(elem));
@@ -76,20 +76,20 @@ auto satisfy_all (truth_table const &table, int32 const val)
   return elems;
 }
 
-auto domain_size (truth_table const &table) -> int64 {
+auto domain_size (truth_table const &table) -> long long {
   return ssize(table.get_vector());
 }
 
-auto evaluate (truth_table const &table, std::vector<int32> const &vars)
-  -> int32 {
+auto evaluate (truth_table const &table, std::vector<int> const &vars)
+  -> int {
   return table.get_vector()[as_uindex(to_index(table, vars))];
 }
 
 /**
  *  \brief Maps values of variables to index in the vector.
  */
-auto to_index (truth_table const &table, std::vector<int32> const &vars)
-  -> int32 {
+auto to_index (truth_table const &table, std::vector<int> const &vars)
+  -> int {
   assert(ssize(vars) == table.get_var_count());
   auto index = 0;
   for (auto i = 0; i < table.get_var_count(); ++i) {

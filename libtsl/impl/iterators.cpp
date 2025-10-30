@@ -1,21 +1,20 @@
-#include "iterators.hpp"
+#include <libtsl/inc/iterators.hpp>
 
 #include <libteddy/impl/tools.hpp>
 
+#include <libtsl/inc/utilities.hpp>
+#include <libtsl/inc/expressions.hpp>
+
 #include <algorithm>
 
-#include "expressions.hpp"
-#include "utilities.hpp"
-
 namespace teddy::tsl {
-// domain_iterator:
 
 domain_iterator::domain_iterator() : domains_({}), indices_({}), varVals_({}) {
 }
 
 domain_iterator::domain_iterator(std::vector<int32> domains) :
   domain_iterator(
-    domains,
+    std::move(domains),
     fill_vector(ssize(domains), [] (auto x) { return x; }),
     {}
   ) {
@@ -58,7 +57,7 @@ domain_iterator::domain_iterator(
   }()) {
 }
 
-auto domain_iterator::operator* () const -> std::vector<int32> const & {
+auto domain_iterator::operator* () const -> const std::vector<int32> & {
   return varVals_;
 }
 
@@ -114,7 +113,6 @@ auto domain_iterator::operator!= (domain_iterator_sentinel) const -> bool {
 
 template<class Expression>
 evaluating_iterator<Expression>::evaluating_iterator() :
-  domainIterator_(),
   expr_(nullptr) {
 }
 
@@ -167,4 +165,5 @@ auto evaluating_iterator<Expression>::get_var_vals() const
 
 template class evaluating_iterator<minmax_expr>;
 template class evaluating_iterator<expr_node>;
+
 } // namespace teddy::tsl

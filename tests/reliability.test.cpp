@@ -1,13 +1,13 @@
 #include <libteddy/inc/core.hpp>
 #include <libteddy/inc/io.hpp>
 
-#include <libtsl/expressions.hpp>
-#include <libtsl/generators.hpp>
-#include <libtsl/iterators.hpp>
-#include <libtsl/probabilities.hpp>
-#include <libtsl/system_description.hpp>
-#include <libtsl/truth_table.hpp>
-#include <libtsl/truth_table_reliability.hpp>
+#include <libtsl/inc/expressions.hpp>
+#include <libtsl/inc/generators.hpp>
+#include <libtsl/inc/iterators.hpp>
+#include <libtsl/inc/probabilities.hpp>
+#include <libtsl/inc/system-description.hpp>
+#include <libtsl/inc/truth-table.hpp>
+#include <libtsl/inc/truth-table-reliability.hpp>
 
 #include <boost/mpl/vector.hpp>
 #include <boost/test/data/test_case.hpp>
@@ -88,7 +88,7 @@ struct bss_fixture {
     .varcount_ = 21
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int state_count_ {2};
 };
@@ -108,7 +108,7 @@ struct mss_fixture {
     .varcount_ = 15
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int state_count_ {M};
 };
@@ -129,7 +129,7 @@ struct imss_fixture {
     .varcount_ = 15
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int state_count_ {M};
 };
@@ -150,7 +150,7 @@ struct ifmss_fixture {
     .varcount_ = 15
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int state_count_ {M};
 };
@@ -935,12 +935,12 @@ BOOST_DATA_TEST_CASE(system_test, systems, system) {
   // System State Probabilities
   for (auto state = 0; state < system.stateCount_; ++state) {
     BOOST_TEST(
-      system.stateProbabilities_[tsl::as_uindex(state)]
+      system.stateProbabilities_[as_uindex(state)]
         == tsl::probability(table, system.componentProbabilities_, state),
       boost::test_tools::tolerance(FloatingTolerance)
     );
     BOOST_TEST(
-      system.stateProbabilities_[tsl::as_uindex(state)]
+      system.stateProbabilities_[as_uindex(state)]
         == manager.calculate_probability(
           state,
           system.componentProbabilities_,
@@ -953,12 +953,12 @@ BOOST_DATA_TEST_CASE(system_test, systems, system) {
   // Availabilities
   for (auto state = 0; state < system.stateCount_; ++state) {
     BOOST_TEST(
-      system.availabilities_[tsl::as_uindex(state)]
+      system.availabilities_[as_uindex(state)]
         == tsl::availability(table, system.componentProbabilities_, state),
       boost::test_tools::tolerance(FloatingTolerance)
     );
     BOOST_TEST(
-      system.availabilities_[tsl::as_uindex(state)]
+      system.availabilities_[as_uindex(state)]
         == manager.calculate_availability(
           state,
           system.componentProbabilities_,
@@ -971,12 +971,12 @@ BOOST_DATA_TEST_CASE(system_test, systems, system) {
   // Unavailabilities
   for (auto state = 0; state < system.stateCount_; ++state) {
     BOOST_TEST(
-      system.unavailabilities_[tsl::as_uindex(state)]
+      system.unavailabilities_[as_uindex(state)]
         == tsl::unavailability(table, system.componentProbabilities_, state),
       boost::test_tools::tolerance(FloatingTolerance)
     );
     BOOST_TEST(
-      system.unavailabilities_[tsl::as_uindex(state)]
+      system.unavailabilities_[as_uindex(state)]
         == manager.calculate_unavailability(
           state,
           system.componentProbabilities_,
@@ -1018,7 +1018,7 @@ BOOST_DATA_TEST_CASE(system_test, systems, system) {
       for (auto componentState = 1; componentState < domain; ++componentState) {
         auto const tableDpld = tsl::dpld(
           table,
-          {.index=varIndex, .from=componentState, .to=componentState - 1},
+          {.index_=varIndex, .from_=componentState, .to_=componentState - 1},
           tsl::type_3_decrease(systemState)
         );
         auto const diagramDpld = manager.dpld(
@@ -1051,7 +1051,7 @@ BOOST_DATA_TEST_CASE(system_test, systems, system) {
       for (auto componentState = 1; componentState < domain; ++componentState) {
         auto const tableDpld = tsl::dpld(
           table,
-          {.index=varIndex, .from=componentState, .to=componentState - 1},
+          {.index_=varIndex, .from_=componentState, .to_=componentState - 1},
           tsl::type_3_decrease(systemState)
         );
         auto const diagramDpld = manager.dpld(

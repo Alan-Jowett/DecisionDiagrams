@@ -1,76 +1,22 @@
-#ifndef LIBTEDDY_TSL_TRUTH_TABLE_HPP
-#define LIBTEDDY_TSL_TRUTH_TABLE_HPP
+#include <libtsl/inc/truth-table.hpp>
 
-#include <libtsl/types.hpp>
+#include <libteddy/impl/types.hpp>
 
-#include <cassert>
 #include <functional>
-#include <limits>
-#include <vector>
 
 namespace teddy::tsl {
-/**
- *  \brief TODO
- */
-struct truth_table {
-  truth_table(std::vector<int32> vector, std::vector<int32> domains);
-
-  [[nodiscard]]
-  auto get_var_count () const -> int32;
-  [[nodiscard]]
-  auto get_vector () const -> std::vector<int32> const &;
-  [[nodiscard]]
-  auto get_domains () const -> std::vector<int32> const &;
-  [[nodiscard]]
-  auto get_offsets () const -> std::vector<int32> const &;
-  [[nodiscard]]
-  auto get_max_val () const -> int32;
-
-  std::vector<int32> vector_;
-  std::vector<int32> domain_;
-  std::vector<int32> offset_;
-  int32 maxValue_;
-};
-
-/**
- *  \brief TODO
- */
-auto satisfy_count (truth_table const &table, int32 val) -> int64;
-
-/**
- *  \brief TODO
- */
-auto satisfy_all (truth_table const &table, int32 val)
-  -> std::vector<std::vector<int32>>;
-
-/**
- *  \brief TODO
- */
-auto domain_size (truth_table const &table) -> int64;
-
-/**
- *  \brief TODO
- */
-auto evaluate (truth_table const &table, std::vector<int32> const &vars)
-  -> int32;
-
-/**
- *  \brief Maps values of variables to index in the vector.
- */
-auto to_index (truth_table const &table, std::vector<int32> const &vars)
-  -> int32;
 
 /**
  *  \brief Invokes \p f with each element of the domain.
  */
 template<class F>
 auto domain_for_each (
-  int32 const varcount,
-  std::vector<int32> const &vector,
-  std::vector<int32> const &domains,
+  int const varcount,
+  std::vector<int> const &vector,
+  std::vector<int> const &domains,
   F f
 ) -> void {
-  auto element = std::vector<int32>(as_usize(varcount), 0);
+  auto element = std::vector<int>(as_usize(varcount), 0);
   auto wasLast = false;
   auto k       = 0;
   do {
@@ -113,7 +59,7 @@ auto apply (truth_table const &lhs, truth_table const &rhs, Op operation)
   assert(ssize(lhs.vector_) == ssize(rhs.vector_));
   assert(lhs.domain_ == rhs.domain_);
 
-  auto result = std::vector<int32>();
+  auto result = std::vector<int>();
   for (auto i = 0; i < ssize(rhs.vector_); ++i) {
     lhs.vector_[as_uindex(i)]
       = operation(lhs.vector_[as_uindex(i)], rhs.vector_[as_uindex(i)]);
@@ -157,6 +103,4 @@ auto compare (std::vector<T> const &lhs, std::vector<T> const &rhs, Cmp cmp)
   return true;
 }
 
-} // namespace teddy::tsl
-
-#endif
+}  // namespace teddy::tsl

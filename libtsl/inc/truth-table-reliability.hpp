@@ -1,18 +1,17 @@
 #ifndef LIBTEDDY_TSL_TRUTH_TABLE_RELIABILITY_HPP
 #define LIBTEDDY_TSL_TRUTH_TABLE_RELIABILITY_HPP
 
+#include <libtsl/inc/truth-table.hpp>
+
 #include <libteddy/impl/types.hpp>
 
-#include <libtsl/truth_table.hpp>
-
-#include <limits>
 #include <vector>
 
 namespace teddy::tsl {
 struct var_change {
-  int32 index;
-  int32 from;
-  int32 to;
+  int index_;
+  int from_;
+  int to_;
 };
 
 /**
@@ -36,7 +35,7 @@ auto probability (
 auto probability (
   truth_table const &table,
   std::vector<std::vector<double>> const &probabilities,
-  int32 systemState
+  int systemState
 ) -> double;
 
 /**
@@ -49,7 +48,7 @@ auto probability (
 auto availability (
   truth_table const &table,
   std::vector<std::vector<double>> const &probabilities,
-  int32 systemState
+  int systemState
 ) -> double;
 
 /**
@@ -61,7 +60,7 @@ auto availability (
 auto unavailability (
   truth_table const &table,
   std::vector<std::vector<double>> const &probabilities,
-  int32 systemState
+  int systemState
 ) -> double;
 
 /**
@@ -70,7 +69,7 @@ auto unavailability (
  *  \param val system state
  *  \return system state frequency
  */
-auto state_frequency (truth_table const &table, int32 systemState) -> double;
+auto state_frequency (truth_table const &table, int systemState) -> double;
 
 /**
  *  \brief Calculcates structural importance using \p dpld
@@ -78,7 +77,7 @@ auto state_frequency (truth_table const &table, int32 systemState) -> double;
  *  \param index index of the variable
  *  \return structural importance
  */
-auto structural_importance (truth_table const &dpld, int32 componentIndex)
+auto structural_importance (truth_table const &dpld, int componentIndex)
   -> double;
 
 /**
@@ -104,9 +103,9 @@ auto birnbaum_importance (
 auto fussell_vesely_importance (
   truth_table const &structureFunction,
   std::vector<std::vector<double>> const &probabilities,
-  int32 componentIndex,
-  int32 componetnState,
-  int32 systemState
+  int componentIndex,
+  int componetnState,
+  int systemState
 ) -> double;
 
 /**
@@ -171,33 +170,8 @@ inline static auto constexpr type_3_increase = [] (auto const val) {
  *  \return new truth table representing DPLD
  */
 template<class F>
-auto dpld (truth_table const &table, var_change const var, F change)
-  -> truth_table {
-  auto result = std::vector<int32>(table.get_vector().size());
-
-  domain_for_each(
-    table,
-    [&,
-     tmpElem
-     = std::vector<int32>()] (auto const fFrom, auto const &elem) mutable {
-      if (elem[as_uindex(var.index)] == var.from) {
-        auto const varIndex  = as_uindex(var.index);
-        tmpElem              = elem;
-        tmpElem[varIndex]    = var.to;
-        auto const fTo       = evaluate(table, tmpElem);
-        auto const derValue  = change(fFrom, fTo) ? 1 : 0;
-        auto const varDomain = table.get_domains()[varIndex];
-        for (auto varValue = 0; varValue < varDomain; ++varValue) {
-          tmpElem[varIndex]   = varValue;
-          auto const derIndex = as_uindex(to_index(table, tmpElem));
-          result[derIndex]    = derValue;
-        }
-      }
-    }
-  );
-
-  return {std::move(result), table.get_domains()};
-}
+auto dpld (truth_table const &table, var_change var, F change)
+  -> truth_table;
 
 /**
  *  \brief Calculates extened DPLD
@@ -207,42 +181,20 @@ auto dpld (truth_table const &table, var_change const var, F change)
  *  \return new truth table representing DPLD
  */
 template<class F>
-auto dpld_e (truth_table const &table, var_change const var, F change)
-  -> truth_table {
-  auto result = std::vector<int32>(table.get_vector().size());
-
-  domain_for_each(
-    table,
-    [&,
-     index = 0U,
-     tmpelem
-     = std::vector<int32>()] (auto const ffrom, auto const &elem) mutable {
-      if (elem[as_uindex(var.index)] != var.from) {
-        result[index] = Undefined;
-      } else {
-        tmpelem                       = elem;
-        tmpelem[as_uindex(var.index)] = var.to;
-        auto const fto                = evaluate(table, tmpelem);
-        result[index]                 = change(ffrom, fto) ? 1 : 0;
-      }
-      ++index;
-    }
-  );
-
-  return {std::move(result), table.get_domains()};
-}
+auto dpld_e (truth_table const &table, var_change var, F change)
+  -> truth_table;
 
 /**
  *  \brief Calculates all MCVs for system \p state
  */
-auto calculate_mcvs (truth_table const &table, int32 state)
-  -> std::vector<std::vector<int32>>;
+auto calculate_mcvs (truth_table const &table, int state)
+  -> std::vector<std::vector<int>>;
 
 /**
  *  \brief Calculates all MPVs for system \p state
  */
-auto calculate_mpvs (truth_table const &table, int32 state)
-  -> std::vector<std::vector<int32>>;
+auto calculate_mpvs (truth_table const &table, int state)
+  -> std::vector<std::vector<int>>;
 
 /**
  *  \brief Calculates probability of the \p vector
@@ -251,10 +203,12 @@ auto calculate_mpvs (truth_table const &table, int32 state)
  *  \return state vector probability
  */
 auto vector_probability (
-  std::vector<int32> const &vector,
+  std::vector<int> const &vector,
   std::vector<std::vector<double>> const &probabilities
 ) -> double;
 
 } // namespace teddy::tsl
+
+#include <libtsl/impl/truth-table-reliability.inl>
 
 #endif

@@ -4,6 +4,7 @@
 #include <vector>
 
 namespace teddy::tsl {
+
 auto constexpr Identity = [] (auto const x) { return x; };
 
 template<class Gen>
@@ -16,6 +17,7 @@ auto fill_vector (long long const n, Gen generator) {
   }
   return data;
 }
+
 } // namespace teddy::tsl
 
 #endif

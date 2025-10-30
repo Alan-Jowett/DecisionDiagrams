@@ -8,5 +8,6 @@ Diagnostics:
   UnusedIncludes: Strict
   Suppress: "pp_including_mainfile_in_preamble"
 
+# TODO rename TEDDY_NO_HEADER_ONLY to LIBTEDDY_NO_HEADER_ONLY
 CompileFlags:
-  Add: [-DTEDDY_NO_HEADER_ONLY]
+  Add: [-DTEDDY_NO_HEADER_ONLY, -DLIBTEDDY_SYMBOLIC_RELIABILITY]

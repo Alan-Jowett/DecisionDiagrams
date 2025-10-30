@@ -1,6 +1,6 @@
 #include <libteddy/inc/io.hpp>
 
-#include <libtsl/pla-description.hpp>
+#include <libtsl/inc/pla-description.hpp>
 
 #include <boost/mpl/vector.hpp>
 #include <boost/test/data/test_case.hpp>

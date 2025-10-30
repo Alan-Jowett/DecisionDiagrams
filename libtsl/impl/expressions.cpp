@@ -1,23 +1,24 @@
-#include "expressions.hpp"
+#include <libtsl/inc/expressions.hpp>
+
+#include <libteddy/impl/tools.hpp>
 
 #include <algorithm>
 #include <cassert>
-#include <limits>
 
 namespace teddy::tsl {
 // minmax_expr:
 
 auto make_minmax_expression (
-  rng_t &indexRng,
-  int32 const varCount,
-  int32 const termCount,
-  int32 const termSize
+  std::ranlux48 &indexRng,
+  int const varCount,
+  int const termCount,
+  int const termSize
 ) -> minmax_expr {
   assert(varCount > 0);
   auto const indexFrom = 0;
   auto const indexTo   = varCount - 1;
-  auto indexDst = std::uniform_int_distribution<int32>(indexFrom, indexTo);
-  auto terms    = std::vector<std::vector<int32>>(as_usize(termCount));
+  auto indexDst = std::uniform_int_distribution<int>(indexFrom, indexTo);
+  auto terms    = std::vector<std::vector<int>>(as_usize(termCount));
 
   for (auto t = 0; t < termCount; ++t) {
     for (auto k = 0; k < termSize; ++k) {
@@ -28,11 +29,11 @@ auto make_minmax_expression (
   return minmax_expr {std::move(terms)};
 }
 
-auto evaluate_expression (minmax_expr const &expr, std::vector<int32> const &vs)
-  -> int32 {
-  auto totalMaxVal = std::numeric_limits<int32>::min();
+auto evaluate_expression (minmax_expr const &expr, std::vector<int> const &vs)
+  -> int {
+  auto totalMaxVal = std::numeric_limits<int>::min();
   for (auto const &term : expr.terms_) {
-    auto termMinVal = std::numeric_limits<int32>::max();
+    auto termMinVal = std::numeric_limits<int>::max();
     for (auto const var : term) {
       auto const val = vs[as_uindex(var)];
       termMinVal     = val < termMinVal ? val : termMinVal;
@@ -54,17 +55,17 @@ expr_node::operation_t::operation_t(
   r_(std::move(r)) {
 }
 
-expr_node::variable_t::variable_t(int32 const i) : i_(i) {
+expr_node::variable_t::variable_t(int const i) : i_(i) {
 }
 
-expr_node::constant_t::constant_t(int32 const c) : c_(c) {
+expr_node::constant_t::constant_t(int const c) : c_(c) {
 }
 
-expr_node::expr_node(expr_node_variable, int32 const i) :
+expr_node::expr_node(expr_node_variable, int const i) :
   data_(std::in_place_type<variable_t>, i) {
 }
 
-expr_node::expr_node(expr_node_constant, int32 const c) :
+expr_node::expr_node(expr_node_constant, int const c) :
   data_(std::in_place_type<constant_t>, c) {
 }
 
@@ -89,15 +90,15 @@ auto expr_node::is_operation() const -> bool {
   return std::holds_alternative<operation_t>(data_);
 }
 
-auto expr_node::get_index() const -> int32 {
+auto expr_node::get_index() const -> int {
   return std::get<variable_t>(data_).i_;
 }
 
-auto expr_node::get_value() const -> int32 {
+auto expr_node::get_value() const -> int {
   return std::get<constant_t>(data_).c_;
 }
 
-auto expr_node::evaluate(int32 const l, int32 const r) const -> int32 {
+auto expr_node::evaluate(int const l, int const r) const -> int {
   switch (std::get<operation_t>(data_).op_) {
   case operation_type::Min:
     return l < r ? l : r;
@@ -119,13 +120,13 @@ auto expr_node::get_right() const -> expr_node const & {
   return *std::get<operation_t>(data_).r_;
 }
 
-auto make_expression_tree (int32 varcount, rng_t &rngtype, rng_t &rngbranch)
+auto make_expression_tree (int varcount, std::ranlux48 &rngtype, std::ranlux48 &rngbranch)
   -> std::unique_ptr<expr_node> {
-  auto go = [&, i = 0u] (auto &self, auto const n) mutable {
+  auto go = [&, i = 0U] (auto &self, auto const n) mutable {
     if (n == 1) {
       return std::make_unique<expr_node>(expr_node_variable(), i++);
     } else {
-      auto denomdist     = std::uniform_int_distribution<int32>(2, 10);
+      auto denomdist     = std::uniform_int_distribution<int>(2, 10);
       auto typedist      = std::uniform_real_distribution(0.0, 1.0);
       auto const denom   = denomdist(rngbranch);
       auto const lhssize = std::max(1, n / denom);
@@ -143,8 +144,8 @@ auto make_expression_tree (int32 varcount, rng_t &rngtype, rng_t &rngbranch)
   return go(go, varcount);
 }
 
-auto evaluate_expression (expr_node const &expr, std::vector<int32> const &vs)
-  -> int32 {
+auto evaluate_expression (expr_node const &expr, std::vector<int> const &vs)
+  -> int {
   auto const go = [&vs] (auto self, auto const &node) {
     if (node.is_variable()) {
       return vs[as_uindex(node.get_index())];
@@ -159,4 +160,5 @@ auto evaluate_expression (expr_node const &expr, std::vector<int32> const &vs)
   };
   return go(go, expr);
 }
+
 } // namespace teddy::tsl

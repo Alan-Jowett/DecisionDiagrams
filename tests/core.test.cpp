@@ -1,9 +1,9 @@
 #include <libteddy/inc/core.hpp>
 #include <libteddy/inc/io.hpp>
 
-#include <libtsl/expressions.hpp>
-#include <libtsl/generators.hpp>
-#include <libtsl/iterators.hpp>
+#include <libtsl/inc/expressions.hpp>
+#include <libtsl/inc/generators.hpp>
+#include <libtsl/inc/iterators.hpp>
 
 #include <boost/mpl/vector.hpp>
 #include <boost/test/tools/interface.hpp>
@@ -28,7 +28,7 @@ struct bdd_fixture {
     .varcount_  = 21,
     .nodecount_ = 5'000,
     .order_     = random_order_tag()
-  };
+};
 
   minmax_expression_settings expr_cfg_ {
     .varcount_  = 21,
@@ -36,7 +36,7 @@ struct bdd_fixture {
     .termsize_  = 5
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int codomain_ {2};
 };
@@ -57,7 +57,7 @@ struct mdd_fixture {
     .termsize_  = 5
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int codomain_ {3};
 };
@@ -79,7 +79,7 @@ struct imdd_fixture {
     .termsize_  = 5
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int codomain_ {3};
 };
@@ -101,7 +101,7 @@ struct ifmdd_fixture {
     .termsize_  = 5
   };
 
-  tsl::rng_t rng_ {911};
+  std::ranlux48 rng_ {911};
 
   int codomain_ {3};
 };

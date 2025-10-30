@@ -1,4 +1,4 @@
-#include <libtsl/truth_table_reliability.hpp>
+#include <libtsl/inc/truth-table-reliability.hpp>
 
 #include <algorithm>
 #include <functional>

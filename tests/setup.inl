@@ -1,5 +1,7 @@
 #include "setup.hpp"
 
+#include <libtsl/inc/utilities.hpp>
+
 namespace teddy::tests {
 
 namespace details {
@@ -15,7 +17,7 @@ match(Ts...) -> match<Ts...>;
 inline auto make_order(
   const std::variant<random_order_tag, default_order_tag, given_order_tag> &tag,
   const int var_count,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> std::vector<int> {
   return std::visit(
     match {
@@ -40,7 +42,7 @@ inline auto make_domains (
   const std::variant<random_domains_tag, given_domains_tag> &tag,
   const int var_count,
   const int domain_max,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> std::vector<int> {
   return std::visit(
     match {
@@ -58,7 +60,7 @@ inline auto make_domains (
 
 }  // namespace details
 
-inline auto make_manager (bdd_manager_settings const &settings, tsl::rng_t &rng)
+inline auto make_manager (bdd_manager_settings const &settings, std::ranlux48 &rng)
   -> bdd_manager {
   return {
     settings.varcount_,
@@ -68,7 +70,7 @@ inline auto make_manager (bdd_manager_settings const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (mdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (mdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> mdd_manager<M> {
   return {
     settings.varcount_,
@@ -78,7 +80,7 @@ auto make_manager (mdd_manager_settings<M> const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (imdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (imdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> imdd_manager {
   return {
     settings.varcount_,
@@ -93,7 +95,7 @@ auto make_manager (imdd_manager_settings<M> const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (ifmdd_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (ifmdd_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> ifmdd_manager<M> {
   return {
     settings.varcount_,
@@ -107,7 +109,7 @@ auto make_manager (ifmdd_manager_settings<M> const &settings, tsl::rng_t &rng)
   };
 }
 
-inline auto make_manager (bss_manager_settings const &settings, tsl::rng_t &rng)
+inline auto make_manager (bss_manager_settings const &settings, std::ranlux48 &rng)
   -> bss_manager {
   return {
     settings.varcount_,
@@ -117,7 +119,7 @@ inline auto make_manager (bss_manager_settings const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (mss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (mss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> mss_manager<M> {
   return {
     settings.varcount_,
@@ -127,7 +129,7 @@ auto make_manager (mss_manager_settings<M> const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (imss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (imss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> imss_manager {
   return imss_manager(
     settings.varcount_,
@@ -142,7 +144,7 @@ auto make_manager (imss_manager_settings<M> const &settings, tsl::rng_t &rng)
 }
 
 template<int M>
-auto make_manager (ifmss_manager_settings<M> const &settings, tsl::rng_t &rng)
+auto make_manager (ifmss_manager_settings<M> const &settings, std::ranlux48 &rng)
   -> ifmss_manager<M> {
   return ifmss_manager<M>(
     settings.varcount_,
@@ -185,7 +187,7 @@ auto make_diagram (
 
 inline auto make_expression (
   minmax_expression_settings const &settings,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> tsl::minmax_expr {
   return tsl::make_minmax_expression(
     rng,
@@ -197,7 +199,7 @@ inline auto make_expression (
 
 inline auto make_expression (
   expression_tree_settings const &settings,
-  tsl::rng_t &rng
+  std::ranlux48 &rng
 ) -> std::unique_ptr<tsl::expr_node> {
   return tsl::make_expression_tree(settings.varcount_, rng, rng);
 }

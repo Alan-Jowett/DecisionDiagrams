@@ -1,43 +1,44 @@
 #ifndef LIBTEDDY_TSL_ITERATORS_HPP
 #define LIBTEDDY_TSL_ITERATORS_HPP
 
-#include <libteddy/impl/types.hpp>
-
+#include <iterator>
+#include <utility>
 #include <vector>
 
 namespace teddy::tsl {
+
 /**
- *  \brief Sentinel for domain iterator.
+ * \brief Sentinel for domain iterator.
  */
 struct domain_iterator_sentinel { };
 
 /**
- *  \brief Iterator for domain of a function.
+ * \brief Iterator for domain of a function.
  */
 class domain_iterator {
 public:
   using difference_type   = std::ptrdiff_t;
-  using value_type        = std::vector<int32>;
+  using value_type        = std::vector<int>;
   using pointer           = value_type *;
   using reference         = value_type &;
   using iterator_category = std::input_iterator_tag;
 
 public:
   /**
-   *  \brief Initializes this as end iterator.
+   * \brief Initializes this as end iterator.
    */
   domain_iterator();
 
   /**
-   *  \brief Initializes using implicit order.
+   * \brief Initializes using implicit order.
    *  Uses implicit order where x0 is the
    *  least significant (changes most often).
    *  \p domains of individual variables
    */
-  domain_iterator(std::vector<int32> domains);
+  explicit domain_iterator(std::vector<int> domains);
 
   /**
-   *  \brief Initializes using explicitly provided order.
+   * \brief Initializes using explicitly provided order.
    *
    *  Uses order of variables defined in \p order . Variable with
    *  index \c order[0] changes most often, then variable with
@@ -45,10 +46,10 @@ public:
    *  \p domains of individual variables
    *  \p order   order in which variables are incremented
    */
-  domain_iterator(std::vector<int32> domains, std::vector<int32> order);
+  domain_iterator(std::vector<int> domains, std::vector<int> order);
 
   /**
-   *  \brief Initializes using explicitly provided order and fixed values.
+   * \brief Initializes using explicitly provided order and fixed values.
    *
    *  Uses order of variables defined in \p order . Variable with
    *  index \c order[0] changes most often, then variable with
@@ -59,12 +60,12 @@ public:
    *  \p fixed   defines variables with fixed value
    */
   domain_iterator(
-    std::vector<int32> domains,
-    std::vector<int32> order,
-    std::vector<std::pair<int32, int32>> fixed
+    std::vector<int> domains,
+    std::vector<int> order,
+    std::vector<std::pair<int, int>> fixed
   );
 
-  auto operator* () const -> std::vector<int32> const &;
+  auto operator* () const -> std::vector<int> const &;
 
   auto operator++ () -> domain_iterator &;
 
@@ -78,25 +79,25 @@ public:
 
   auto operator!= (domain_iterator_sentinel) const -> bool;
 
-protected:
-  std::vector<int32> domains_;
-  std::vector<int32> indices_;
-  std::vector<int32> varVals_;
+private:
+  std::vector<int> domains_;
+  std::vector<int> indices_;
+  std::vector<int> varVals_;
 };
 
 /**
- *  \brief Sentinel for evaluating iterator.
+ * \brief Sentinel for evaluating iterator.
  */
 struct evaluating_iterator_sentinel { };
 
 /**
- *  \brief Iterator that evaluates an expression over a domain.
+ * \brief Iterator that evaluates an expression over a domain.
  */
 template<class Expression>
 class evaluating_iterator {
 public:
   using difference_type   = std::ptrdiff_t;
-  using value_type        = int32;
+  using value_type        = int;
   using pointer           = value_type *;
   using reference         = value_type &;
   using iterator_category = std::input_iterator_tag;
@@ -106,21 +107,22 @@ public:
 
   evaluating_iterator(domain_iterator iterator, Expression const &expr);
 
-  auto operator* () const -> int32;
+  auto operator* () const -> int;
 
   auto operator++ () -> evaluating_iterator &;
 
   auto operator++ (int) -> evaluating_iterator;
 
-  auto operator== (evaluating_iterator_sentinel const s) const -> bool;
+  auto operator== (evaluating_iterator_sentinel s) const -> bool;
 
-  auto operator!= (evaluating_iterator_sentinel const s) const -> bool;
+  auto operator!= (evaluating_iterator_sentinel s) const -> bool;
 
-  auto get_var_vals () const -> std::vector<int32> const &;
+  [[nodiscard]]
+  auto get_var_vals () const -> const std::vector<int> &;
 
 private:
   domain_iterator domainIterator_;
-  Expression const *expr_;
+  const Expression *expr_;
 };
 
 template<class Expression>
@@ -140,7 +142,7 @@ auto operator!= (
 }
 
 /**
- *  \brief Output iterator that feeds outputed values into a function.
+ * \brief Output iterator that feeds outputed values into a function.
  */
 template<class OutputFunction>
 class forwarding_iterator {
@@ -152,10 +154,9 @@ public:
   using iterator_category = std::output_iterator_tag;
 
 public:
-  forwarding_iterator() {
-  }
+  forwarding_iterator() = default;
 
-  forwarding_iterator(OutputFunction f) : outputFunction_(std::move(f)) {
+  explicit forwarding_iterator(OutputFunction f) : outputFunction_(std::move(f)) {
   }
 
   auto operator++ () -> forwarding_iterator & {
@@ -175,7 +176,7 @@ public:
     return *this;
   }
 
-  auto operator= (auto &&arg) const -> forwarding_iterator const & {
+  auto operator= (auto &&arg) const -> forwarding_iterator & {
     outputFunction_(std::forward<decltype(arg)>(arg));
     return *this;
   }
@@ -183,6 +184,7 @@ public:
 private:
   OutputFunction outputFunction_;
 };
+
 } // namespace teddy::tsl
 
 #endif
