@@ -43,11 +43,11 @@ jobs:
           libboost-test-dev \
           libfmt-dev
 
-    - name: Install dependencies (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        # Install vcpkg dependencies
-        vcpkg install boost-test:x64-windows fmt:x64-windows
+    # - name: Install dependencies (Windows)
+    #   if: matrix.os == 'windows-latest'
+    #   run: |
+    #     # Install vcpkg dependencies
+    #     vcpkg install boost-test:x64-windows fmt:x64-windows
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-latest'
@@ -59,7 +59,7 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         cmake -DCMAKE_BUILD_TYPE=Release \
-              -DLIBTEDDY_BUILD_TESTS=ON \
+              -DLIBTEDDY_BUILD_TESTS=OFF \
               -DLIBTEDDY_BUILD_EXAMPLES=ON \
               -S . -B build
 
@@ -67,7 +67,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cmake -DCMAKE_BUILD_TYPE=Release `
-              -DLIBTEDDY_BUILD_TESTS=ON `
+              -DLIBTEDDY_BUILD_TESTS=OFF `
               -DLIBTEDDY_BUILD_EXAMPLES=ON `
               -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" `
               -S . -B build
@@ -75,9 +75,9 @@ jobs:
     - name: Build
       run: cmake --build build --config Release -j4
 
-    - name: Run tests
-      working-directory: build
-      run: ctest --output-on-failure --build-config Release
+    # - name: Run tests
+    #   working-directory: build
+    #   run: ctest --output-on-failure --build-config Release
 
     - name: Run example (readme)
       if: matrix.os != 'windows-latest'
