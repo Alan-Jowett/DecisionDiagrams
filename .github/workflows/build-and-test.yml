@@ -86,3 +86,46 @@ jobs:
     - name: Run example (readme) - Windows
       if: matrix.os == 'windows-latest'
       run: .\build\examples\Release\readme.exe
+
+  sanitizer-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libboost-test-dev \
+          libfmt-dev
+
+    - name: Configure CMake with sanitizers
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DLIBTEDDY_BUILD_TESTS=ON \
+              -DLIBTEDDY_BUILD_EXAMPLES=ON \
+              -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer" \
+              -DCMAKE_C_FLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer" \
+              -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address -fsanitize=undefined" \
+              -DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address -fsanitize=undefined" \
+              -S . -B build
+
+    - name: Build with sanitizers
+      run: cmake --build build --config RelWithDebInfo -j4
+
+    - name: Run tests with sanitizers
+      working-directory: build
+      env:
+        ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
+        UBSAN_OPTIONS: print_stacktrace=1:abort_on_error=1
+      run: ctest --output-on-failure --build-config RelWithDebInfo
+
+    - name: Run example with sanitizers
+      env:
+        ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
+        UBSAN_OPTIONS: print_stacktrace=1:abort_on_error=1
+      run: ./build/examples/readme
