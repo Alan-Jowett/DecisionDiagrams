@@ -623,6 +623,7 @@ auto unique_table<Data, Degree>::rehash(int64 const newCapacity) -> void
             node = next;
         }
     };
+    std::free(oldBuckets);
 
 #ifdef LIBTEDDY_VERBOSE
     debug::out(", load after ", this->get_load_factor(), "\n");
@@ -857,6 +858,7 @@ auto apply_cache<Data, Degree>::rehash(int64 const newCapacity) -> void
             this->put(entry.opId_, entry.result_, entry.lhs_, entry.rhs_);
         }
     }
+    std::free(oldEntries);
 
 #ifdef LIBTEDDY_VERBOSE
     debug::out(" new load is ", this->get_load_factor(), "\n");
