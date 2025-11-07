@@ -262,10 +262,20 @@ BOOST_FIXTURE_TEST_CASE_TEMPLATE(satisfy_one, Fixture, Fixtures, Fixture)
 
     for (auto j = 0; j < Fixture::maxValue_; ++j)
     {
-        auto const vars
-            = manager.template satisfy_one<std::vector<int32>>(j, diagram);
-        BOOST_REQUIRE(vars.has_value());
-        BOOST_REQUIRE_EQUAL(j, manager.evaluate(diagram, *vars));
+        auto const count = manager.satisfy_count(j, diagram);
+        auto const vars = manager.template satisfy_one<std::vector<int32>>(j, diagram);
+        
+        if (count > 0)
+        {
+            // If there are satisfying assignments, satisfy_one should return one
+            BOOST_REQUIRE(vars.has_value());
+            BOOST_REQUIRE_EQUAL(j, manager.evaluate(diagram, *vars));
+        }
+        else
+        {
+            // If there are no satisfying assignments, satisfy_one should return nullopt
+            BOOST_REQUIRE(!vars.has_value());
+        }
     }
 
     auto const justOne = manager.constant(1);

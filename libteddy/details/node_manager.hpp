@@ -347,12 +347,12 @@ node_manager<Data, Degree, Domain>::node_manager(
     autoReorderEnabled_(false),
     gcReorderDeferred_(false)
 {
-    assert(ssize(levelToIndex_) == varCount_);
+    assert(std::ssize(levelToIndex_) == varCount_);
     assert(check_distinct(levelToIndex_));
 
     if constexpr (domains::is_mixed<Domain>::value)
     {
-        assert(ssize(domains_.domains_) == varCount_);
+        assert(std::ssize(domains_.domains_) == varCount_);
         if constexpr (degrees::is_fixed<Degree>::value)
         {
             for ([[maybe_unused]] int32 const domain : domains_.domains_)
@@ -429,7 +429,7 @@ template<class Data, class Degree, class Domain>
 auto node_manager<Data, Degree, Domain>::get_terminal_node(int32 const value
 ) const -> node_t*
 {
-    return value < ssize(terminals_) ? terminals_[as_uindex(value)] : nullptr;
+    return value < std::ssize(terminals_) ? terminals_[as_uindex(value)] : nullptr;
 }
 
 template<class Data, class Degree, class Domain>
@@ -446,7 +446,7 @@ auto node_manager<Data, Degree, Domain>::make_terminal_node(int32 const value)
         return this->make_special_node(value);
     }
 
-    if (value >= ssize(terminals_))
+    if (value >= std::ssize(terminals_))
     {
         terminals_.resize(as_usize(value + 1), nullptr);
     }
@@ -550,7 +550,7 @@ template<class Data, class Degree, class Domain>
 auto node_manager<Data, Degree, Domain>::get_index(int32 const level) const
     -> int32
 {
-    assert(level < ssize(levelToIndex_));
+    assert(level < std::ssize(levelToIndex_));
     return levelToIndex_[as_uindex(level)];
 }
 
@@ -1005,7 +1005,7 @@ auto node_manager<Data, Degree, Domain>::adjust_tables() -> void
     );
 #endif
 
-    for (int32 i = 0; i < ssize(uniqueTables_); ++i)
+    for (int32 i = 0; i < std::ssize(uniqueTables_); ++i)
     {
         uniqueTables_[as_uindex(i)].adjust_capacity();
     }

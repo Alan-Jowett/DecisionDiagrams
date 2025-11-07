@@ -90,6 +90,27 @@ cmake --build build -t test
 ```
 *Note that the second test might take a couple of minutes to execute depending on the hardware.*
 
+## Building with Sanitizers (Linux/macOS)
+To help detect memory errors, leaks, and undefined behavior during development, you can build with AddressSanitizer and UndefinedBehaviorSanitizer:
+
+```sh
+# Build with sanitizers (recommended for development and testing)
+cmake -DCMAKE_BUILD_TYPE=Debug -DLIBTEDDY_BUILD_TESTS=ON -DLIBTEDDY_USE_SANITIZERS=ON -S . -B build
+cmake --build build -j4
+
+# Run tests with sanitizers
+export ASAN_OPTIONS="detect_leaks=1:halt_on_error=1:abort_on_error=1:print_stacktrace=1"
+export UBSAN_OPTIONS="halt_on_error=1:abort_on_error=1:print_stacktrace=1"
+cmake --build build -t test
+```
+
+The sanitizers will help catch:
+- **AddressSanitizer (ASan)**: Memory leaks, buffer overflows, use-after-free
+- **UndefinedBehaviorSanitizer (UBSan)**: Undefined behavior like integer overflow, unaligned access
+- **LeakSanitizer**: Memory leaks (included with ASan)
+
+*Note: Sanitizer builds are slower but provide valuable debugging information.*
+
 # How to use
 TeDDy consists of two modules. The first module `teddy-core` contains algorithms for general manipulation and the creation of decision diagrams. The second module `teddy-reliability` contains algorithms aimed at reliability analysis utilizing decision diagrams.
 

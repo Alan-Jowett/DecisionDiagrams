@@ -162,7 +162,7 @@ inline auto bool_cube::get(int32 const i) const -> int32
     int32 const byteIndex        = i / 4;
     std::size_t const uByteIndex = as_uindex(byteIndex);
 
-    assert(byteIndex >= 0 && byteIndex < ssize(values_));
+    assert(byteIndex >= 0 && byteIndex < std::ssize(values_));
 
     switch (i % 4)
     {
@@ -183,7 +183,7 @@ inline auto bool_cube::set(int32 const index, int32 const value) -> void
     int32 const byteIndex        = index / 4;
     std::size_t const uByteIndex = as_uindex(byteIndex);
 
-    assert((byteIndex >= 0 && byteIndex < ssize(values_)));
+    assert((byteIndex >= 0 && byteIndex < std::ssize(values_)));
     assert(value == 0 || value == 1 || value == DontCare);
 
     switch (index % 4)
@@ -338,7 +338,7 @@ inline auto pla_file::load_file(std::string const& path)
         std::string const varsStr(first, varsLast);
         std::string const fStr(fsFirst, fsLast);
 
-        if (ssize(varsStr) != *varCount || ssize(fStr) != *fCount)
+        if (std::ssize(varsStr) != *varCount || std::ssize(fStr) != *fCount)
         {
             return std::nullopt;
         }

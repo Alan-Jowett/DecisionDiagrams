@@ -963,7 +963,7 @@ auto diagram_manager<Data, Degree, Domain>::from_vector(I first, S last)
             for (int32 k = 0; k < newDomain; ++k)
             {
                 newSons[k]
-                    = stack[as_uindex(ssize(stack) - newDomain + k)].node;
+                    = stack[as_uindex(static_cast<int32>(std::ssize(stack) - newDomain + k))].node;
             }
             node_t* const newNode
                 = nodes_.make_internal_node(newIndex, newSons);
@@ -985,7 +985,7 @@ auto diagram_manager<Data, Degree, Domain>::from_vector(I first, S last)
         shrink_stack();
     }
 
-    assert(ssize(stack) == 1);
+    assert(std::ssize(stack) == 1);
     return diagram_t(stack.back().node);
 }
 
@@ -1499,7 +1499,7 @@ auto diagram_manager<Data, Degree, Domain>::satisfy_one(
     Vars vars;
     if constexpr (utils::is_std_vector<Vars>)
     {
-        vars.resize(as_usize(this->get_var_count()));
+        vars.resize(as_usize(this->get_var_count()), 0);
     }
 
     node_t* const root = diagram.unsafe_get_root();
@@ -1563,7 +1563,7 @@ auto diagram_manager<Data, Degree, Domain>::satisfy_all_g(
     Vars vars;
     if constexpr (utils::is_std_vector<Vars>)
     {
-        vars.resize(as_usize(this->get_var_count()));
+        vars.resize(as_usize(this->get_var_count()), 0);
     }
 
     node_t* const root = diagram.unsafe_get_root();

@@ -147,15 +147,23 @@ option(LIBTEDDY_BUILD_EXAMPLES    "Build examples"        OFF)
 option(LIBTEDDY_BUILD_EXPERIMENTS "Build experiments"     OFF)
 
 ## Common compile and link options for subprojects
-string(
-    JOIN ";" LIBTEDDY_COMPILE_OPTIONS
-        "-Wall"
-        "-Wextra"
-        "-Wpedantic"
-        "-Wconversion"
-        "-Wsign-conversion"
-        "-Wshadow"
-)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    string(
+        JOIN ";" LIBTEDDY_COMPILE_OPTIONS
+            "/W4"
+            "/permissive-"
+    )
+else()
+    string(
+        JOIN ";" LIBTEDDY_COMPILE_OPTIONS
+            "-Wall"
+            "-Wextra"
+            "-Wpedantic"
+            "-Wconversion"
+            "-Wsign-conversion"
+            "-Wshadow"
+    )
+endif()
 
 string(
     JOIN ";" LIBTEDDY_LINK_OPTIONS
@@ -193,24 +201,67 @@ if(LIBTEDDY_USE_LIBCXX AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 ## Enable asan and ubsan if requested
-if(LIBTEDDY_USE_SANITIZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message(
-        "=== Asan a Ubsan enabled"
-    )
+if(LIBTEDDY_USE_SANITIZERS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        message(
+            "=== AddressSanitizer and UndefinedBehaviorSanitizer enabled for GCC"
+        )
 
-    string(
-        JOIN ";" LIBTEDDY_COMPILE_OPTIONS
-            ${LIBTEDDY_COMPILE_OPTIONS}
-            "-fsanitize=address"
-            "-fsanitize=undefined"
-    )
+        string(
+            JOIN ";" LIBTEDDY_COMPILE_OPTIONS
+                ${LIBTEDDY_COMPILE_OPTIONS}
+                "-fsanitize=address"
+                "-fsanitize=undefined"
+                "-fsanitize=leak"
+                "-fno-omit-frame-pointer"
+                "-g"
+        )
 
-    string(
-        JOIN ";" LIBTEDDY_LINK_OPTIONS
-            ${LIBTEDDY_LINK_OPTIONS}
-            "-fsanitize=address"
-            "-fsanitize=undefined"
-    )
+        string(
+            JOIN ";" LIBTEDDY_LINK_OPTIONS
+                ${LIBTEDDY_LINK_OPTIONS}
+                "-fsanitize=address"
+                "-fsanitize=undefined"
+                "-fsanitize=leak"
+        )
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        message(
+            "=== AddressSanitizer and UndefinedBehaviorSanitizer enabled for Clang"
+        )
+
+        string(
+            JOIN ";" LIBTEDDY_COMPILE_OPTIONS
+                ${LIBTEDDY_COMPILE_OPTIONS}
+                "-fsanitize=address"
+                "-fsanitize=undefined"
+                "-fsanitize=leak"
+                "-fno-omit-frame-pointer"
+                "-g"
+        )
+
+        string(
+            JOIN ";" LIBTEDDY_LINK_OPTIONS
+                ${LIBTEDDY_LINK_OPTIONS}
+                "-fsanitize=address"
+                "-fsanitize=undefined"
+                "-fsanitize=leak"
+        )
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        message(
+            "=== AddressSanitizer enabled for MSVC"
+        )
+
+        string(
+            JOIN ";" LIBTEDDY_COMPILE_OPTIONS
+                ${LIBTEDDY_COMPILE_OPTIONS}
+                "/fsanitize=address"
+                "/Zi"
+        )
+    else()
+        message(
+            WARNING "Sanitizers not supported for compiler: ${CMAKE_CXX_COMPILER_ID}"
+        )
+    endif()
 endif()
 
 ## Build tests and examples if requested

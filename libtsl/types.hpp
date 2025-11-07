@@ -2,6 +2,7 @@
 #define LIBTEDDY_TSL_TYPES_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 namespace teddy::tsl
 {
