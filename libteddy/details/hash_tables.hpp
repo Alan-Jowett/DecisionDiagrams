@@ -627,6 +627,7 @@ auto unique_table<Data, Degree>::rehash(int64 const newCapacity) -> void
 #ifdef LIBTEDDY_VERBOSE
     debug::out(", load after ", this->get_load_factor(), "\n");
 #endif
+    std::free(oldBuckets);
 }
 
 template<class Data, class Degree>
@@ -861,6 +862,7 @@ auto apply_cache<Data, Degree>::rehash(int64 const newCapacity) -> void
 #ifdef LIBTEDDY_VERBOSE
     debug::out(" new load is ", this->get_load_factor(), "\n");
 #endif
+    std::free(oldEntries);
 }
 
 template<class Data, class Degree>
