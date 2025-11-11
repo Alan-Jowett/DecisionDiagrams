@@ -382,23 +382,34 @@ node_manager<Data, Degree, Domain>::node_manager(
     double const c  = RelPeakPosition * (static_cast<double>(varCount) - 1);
     double const fc = RelPeakNodeCount * static_cast<double>(nodePoolSize);
 
-    for (int32 i = 0; i <= static_cast<int32>(c); ++i)
+    // Handle edge case where varCount is 1 (c becomes 0)
+    if (varCount_ == 1)
     {
-        auto const x = static_cast<double>(i);
         uniqueTables_.emplace_back(
-            static_cast<int64>(fc * x / c),
-            this->get_domain(i)
+            static_cast<int64>(fc),
+            this->get_domain(0)
         );
     }
-
-    for (auto i = static_cast<int32>(c) + 1; i < varCount_; ++i)
+    else
     {
-        auto const n = static_cast<double>(varCount) - 1;
-        auto const x = static_cast<double>(i);
-        uniqueTables_.emplace_back(
-            static_cast<int64>((fc * x) / (c - n) - (fc * n) / (c - n)),
-            this->get_domain(i)
-        );
+        for (int32 i = 0; i <= static_cast<int32>(c); ++i)
+        {
+            auto const x = static_cast<double>(i);
+            uniqueTables_.emplace_back(
+                static_cast<int64>(fc * x / c),
+                this->get_domain(i)
+            );
+        }
+
+        for (auto i = static_cast<int32>(c) + 1; i < varCount_; ++i)
+        {
+            auto const n = static_cast<double>(varCount) - 1;
+            auto const x = static_cast<double>(i);
+            uniqueTables_.emplace_back(
+                static_cast<int64>((fc * x) / (c - n) - (fc * n) / (c - n)),
+                this->get_domain(i)
+            );
+        }
     }
 }
 
